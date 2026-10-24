@@ -1,0 +1,6 @@
+{
+  "name": "L'Élite Salon & Spa PWA",
+  "description": "Professional unisex hair salon PWA with client, professional, and admin dashboards, booking system, product showcase, and live chat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
