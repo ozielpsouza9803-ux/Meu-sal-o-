@@ -5,6 +5,7 @@ import { Appointment, Stylist } from '../types';
 interface ProfessionalScreenProps {
   appointments: Appointment[];
   stylists: Stylist[];
+  currentUser?: { id?: string; name: string; email?: string; stylistId?: string } | null;
   onUpdateStatus: (stylistId: string, status: Stylist['status']) => void;
   onCustomizeAvatar: (id: string, name: string, avatar: string) => void;
 }
@@ -12,26 +13,36 @@ interface ProfessionalScreenProps {
 export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
   appointments,
   stylists,
+  currentUser,
   onUpdateStatus,
   onCustomizeAvatar,
 }) => {
-  const currentStylist = stylists[0]; // Juliana Vance as default professional view
+  // Bind view dynamically to the authenticated professional
+  const currentStylist = (currentUser?.stylistId ? stylists.find(s => s.id === currentUser.stylistId) : null) ||
+    (currentUser?.name ? stylists.find(s => s.name.toLowerCase().includes(currentUser.name.toLowerCase())) : null) ||
+    stylists[0];
   const [clientNotesInput, setClientNotesInput] = useState('');
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>(appointments[0]?.id || '');
 
   const todayAppointments = appointments.filter(a => a.status === 'confirmado');
   const totalCommissionToday = todayAppointments.reduce((acc, curr) => acc + (curr.price * 0.4), 0);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSaveNotes = () => {
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+  };
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 sm:space-y-8 pb-20">
       {/* Professional Header & Status Toggle */}
-      <div className="p-6 lg:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-        <div className="flex items-center gap-5 text-center md:text-left">
-          <div className="relative group">
+      <div className="p-4 sm:p-6 lg:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 shadow-xl">
+        <div className="flex items-center gap-4 sm:gap-5 text-left">
+          <div className="relative group shrink-0">
             <img 
               src={currentStylist.avatar} 
               alt={currentStylist.name}
-              className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-500"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-500"
               referrerPolicy="no-referrer"
             />
             <button
@@ -42,26 +53,26 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
               <Camera className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+          <div className="space-y-1 min-w-0">
+            <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
               <Briefcase className="w-3 h-3" />
               Painel do Profissional Mestre
             </div>
-            <h1 className="text-2xl font-extrabold text-white">{currentStylist.name}</h1>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white truncate">{currentStylist.name}</h1>
             <p className="text-xs text-slate-400">{currentStylist.role} · ID: #ST-8092</p>
           </div>
         </div>
 
         {/* Status Switcher */}
-        <div className="flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
+        <div className="flex flex-col items-start md:items-end gap-2 w-full md:w-auto">
           <span className="text-xs text-slate-400 font-medium">Seu Status Atual:</span>
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto scrollbar-none">
             {(['disponível', 'em atendimento', 'pausa'] as Stylist['status'][]).map((status) => (
               <button
                 key={status}
                 onClick={() => onUpdateStatus(currentStylist.id, status)}
                 className={`
-                  px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all
+                  flex-1 sm:flex-initial px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all min-h-[38px] flex items-center justify-center
                   ${currentStylist.status === status
                     ? 'bg-amber-500 text-slate-950 shadow'
                     : 'text-slate-400 hover:text-white'
@@ -76,8 +87,8 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
       </div>
 
       {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="p-4 sm:p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-semibold">Agendamentos Hoje</span>
             <Calendar className="w-4 h-4 text-amber-400" />
@@ -86,7 +97,7 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
           <p className="text-[11px] text-emerald-400">Próximo às 14:30</p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+        <div className="p-4 sm:p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-semibold">Comissão Estimada (Hoje)</span>
             <DollarSign className="w-4 h-4 text-amber-400" />
@@ -95,7 +106,7 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
           <p className="text-[11px] text-amber-400">40% taxa padrão</p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+        <div className="p-4 sm:p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-semibold">Avaliação Média</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -106,38 +117,38 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
       </div>
 
       {/* Agenda & Client Formulas Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Schedule list */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-bold text-white">Sua Agenda de Hoje</h2>
+          <h2 className="text-base sm:text-lg font-bold text-white">Sua Agenda de Hoje</h2>
           
           <div className="space-y-3">
             {todayAppointments.map((app) => (
               <div 
                 key={app.id} 
                 onClick={() => setSelectedAppointmentId(app.id)}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer ${selectedAppointmentId === app.id ? 'bg-amber-500/5 border-amber-500/50' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`}
+                className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${selectedAppointmentId === app.id ? 'bg-amber-500/5 border-amber-500/50' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-sm shrink-0">
                       {app.time}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-white text-base">{app.clientName}</h3>
-                      <p className="text-xs text-amber-400 font-medium">{app.serviceName}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-white text-sm sm:text-base truncate">{app.clientName}</h3>
+                      <p className="text-xs text-amber-400 font-medium truncate">{app.serviceName}</p>
                     </div>
                   </div>
 
-                  <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">
+                  <span className="shrink-0 text-[11px] sm:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">
                     Confirmado
                   </span>
                 </div>
 
                 {app.notes && (
                   <div className="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-400 flex items-center gap-2">
-                    <FileText className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Nota: {app.notes}</span>
+                    <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span className="line-clamp-2">Nota: {app.notes}</span>
                   </div>
                 )}
               </div>
@@ -147,9 +158,9 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
 
         {/* Client Hair Formulas & Notes Editor */}
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white">Fórmulas & Histórico Técnico</h2>
+          <h2 className="text-base sm:text-lg font-bold text-white">Fórmulas & Histórico Técnico</h2>
           
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+          <div className="p-5 sm:p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1.5">Cliente Selecionado</label>
               <input 
@@ -171,11 +182,18 @@ export const ProfessionalScreen: React.FC<ProfessionalScreenProps> = ({
               />
             </div>
 
+            {saveSuccess && (
+              <div className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-medium">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>Prontuário técnico salvo com sucesso!</span>
+              </div>
+            )}
+
             <button
-              onClick={() => alert("Fórmula e observações salvas com sucesso no prontuário da cliente!")}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20"
+              onClick={handleSaveNotes}
+              className="w-full min-h-[44px] py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2"
             >
-              Salvar Prontuário Técnico
+              <span>Salvar Prontuário Técnico</span>
             </button>
           </div>
         </div>

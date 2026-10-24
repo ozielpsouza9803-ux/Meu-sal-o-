@@ -104,20 +104,20 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-20">
+    <div className="max-w-3xl w-full mx-auto space-y-6 sm:space-y-8 pb-16 sm:pb-20">
       {/* Wizard Steps Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {editingAppointment ? 'Editar Agendamento' : 'Agendamento Online Funcional'}
           </h1>
-          <p className="text-xs text-slate-400">Passo {step} de 3 · Validação de Conflitos & WhatsApp</p>
+          <p className="text-xs text-slate-400 mt-0.5">Passo {step} de 3 · Validação de Conflitos & WhatsApp</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           {[1, 2, 3].map((s) => (
             <div 
               key={s} 
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${step >= s ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold ${step >= s ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}
             >
               {s}
             </div>
@@ -126,7 +126,7 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
       </div>
 
       {errorMessage && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -134,40 +134,40 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
 
       {/* Step 1: Select Service */}
       {step === 1 && (
-        <div className="space-y-6">
-          <h2 className="text-lg font-bold text-white">1. Escolha o Serviço Desejado</h2>
+        <div className="space-y-5 sm:space-y-6">
+          <h2 className="text-base sm:text-lg font-bold text-white">1. Escolha o Serviço Desejado</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
             {services.map((service) => (
               <div
                 key={service.id}
                 onClick={() => setServiceId(service.id)}
-                className={`p-5 rounded-2xl border cursor-pointer transition-all flex items-start gap-4 ${serviceId === service.id ? 'bg-amber-500/10 border-amber-500 shadow-lg' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`}
+                className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3.5 sm:gap-4 ${serviceId === service.id ? 'bg-amber-500/10 border-amber-500 shadow-lg' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`}
               >
                 <img 
                   src={service.image} 
                   alt={service.name} 
-                  className="w-20 h-20 rounded-xl object-cover shrink-0"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shrink-0"
                   referrerPolicy="no-referrer"
                 />
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-amber-400 font-semibold uppercase">{service.category}</span>
-                    <span className="text-xs font-bold text-white">R$ {service.price.toFixed(2)}</span>
+                <div className="space-y-1 flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[10px] sm:text-xs text-amber-400 font-semibold uppercase truncate">{service.category}</span>
+                    <span className="text-xs sm:text-sm font-bold text-white shrink-0">R$ {service.price.toFixed(2)}</span>
                   </div>
-                  <h3 className="font-bold text-white text-sm">{service.name}</h3>
-                  <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {service.durationMinutes} minutos
+                  <h3 className="font-bold text-white text-xs sm:text-sm truncate">{service.name}</h3>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-amber-400 shrink-0" /> {service.durationMinutes} minutos
                   </p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-3 sm:pt-4">
             <button
               onClick={() => setStep(2)}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
+              className="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 min-h-[44px]"
             >
               <span>Avançar para Profissional & Horário</span>
               <ArrowRight className="w-4 h-4" />
@@ -178,41 +178,41 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
 
       {/* Step 2: Select Stylist & Date/Time with Conflict Validation */}
       {step === 2 && (
-        <div className="space-y-6">
-          <h2 className="text-lg font-bold text-white">2. Escolha o Profissional & Horário Disponível</h2>
+        <div className="space-y-5 sm:space-y-6">
+          <h2 className="text-base sm:text-lg font-bold text-white">2. Escolha o Profissional & Horário Disponível</h2>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <label className="block text-xs font-semibold text-slate-400">Profissional Especialista</label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {stylists.map((stylist) => (
                 <div
                   key={stylist.id}
                   onClick={() => setStylistId(stylist.id)}
-                  className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center gap-3 ${stylistId === stylist.id ? 'bg-amber-500/10 border-amber-500' : 'bg-slate-900 border-slate-800'}`}
+                  className={`p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-all flex items-center gap-3 ${stylistId === stylist.id ? 'bg-amber-500/10 border-amber-500 shadow-md' : 'bg-slate-900 border-slate-800 hover:border-slate-700'}`}
                 >
                   <img 
                     src={stylist.avatar} 
                     alt={stylist.name} 
-                    className="w-12 h-12 rounded-xl object-cover"
+                    className="w-12 h-12 rounded-xl object-cover shrink-0"
                     referrerPolicy="no-referrer"
                   />
-                  <div>
-                    <h3 className="font-bold text-white text-xs">{stylist.name}</h3>
-                    <p className="text-[10px] text-amber-400">{stylist.role}</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold text-white text-xs sm:text-sm truncate">{stylist.name}</h3>
+                    <p className="text-[10px] text-amber-400 truncate">{stylist.role}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 pt-1">
             <div>
               <label className="block text-xs font-semibold text-slate-400 mb-1">Data do Atendimento</label>
               <input 
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500 min-h-[44px]"
               />
             </div>
             <div>
@@ -220,7 +220,7 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
               <select
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500 min-h-[44px]"
               >
                 {availableTimes.map((slot) => {
                   const taken = isSlotTaken(stylistId, date, slot);
@@ -234,16 +234,16 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-4">
             <button
               onClick={() => setStep(1)}
-              className="px-5 py-2.5 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center gap-2"
+              className="px-5 py-3 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 min-h-[44px]"
             >
               <ArrowLeft className="w-4 h-4" /> Voltar
             </button>
             <button
               onClick={handleNextStep2}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
+              className="px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 min-h-[44px]"
             >
               <span>Revisar Agendamento</span>
               <ArrowRight className="w-4 h-4" />
@@ -254,25 +254,25 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
 
       {/* Step 3: Confirmation & Details */}
       {step === 3 && (
-        <form onSubmit={handleFinish} className="space-y-6">
-          <h2 className="text-lg font-bold text-white">3. Confirmação & Seus Dados</h2>
+        <form onSubmit={handleFinish} className="space-y-5 sm:space-y-6">
+          <h2 className="text-base sm:text-lg font-bold text-white">3. Confirmação & Seus Dados</h2>
 
-          <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div>
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900 border border-slate-800 space-y-4">
+            <div className="flex items-start sm:items-center justify-between border-b border-slate-800 pb-4 gap-2">
+              <div className="min-w-0 flex-1">
                 <p className="text-xs text-slate-400">Serviço Escolhido</p>
-                <h3 className="font-bold text-white text-base">{selectedService.name}</h3>
+                <h3 className="font-bold text-white text-sm sm:text-base truncate">{selectedService.name}</h3>
               </div>
-              <span className="text-lg font-bold text-amber-400">R$ {selectedService.price.toFixed(2)}</span>
+              <span className="text-base sm:text-lg font-bold text-amber-400 shrink-0">R$ {selectedService.price.toFixed(2)}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs text-slate-300">
-              <div>
-                <span className="text-slate-500 block">Profissional</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+                <span className="text-slate-500 block text-[11px]">Profissional</span>
                 <span className="font-semibold text-white">{selectedStylist.name}</span>
               </div>
-              <div>
-                <span className="text-slate-500 block">Data e Hora</span>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+                <span className="text-slate-500 block text-[11px]">Data e Hora</span>
                 <span className="font-semibold text-white">{date} às {time}</span>
               </div>
             </div>
@@ -285,7 +285,7 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
                   required
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500 min-h-[44px]"
                 />
               </div>
 
@@ -302,17 +302,17 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-4">
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="px-5 py-2.5 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center gap-2"
+              className="px-5 py-3 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 min-h-[44px]"
             >
               <ArrowLeft className="w-4 h-4" /> Voltar
             </button>
             <button
               type="submit"
-              className="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all shadow-xl shadow-amber-500/20 flex items-center gap-2"
+              className="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl transition-all shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 min-h-[44px]"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{editingAppointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}</span>
@@ -323,13 +323,13 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
 
       {/* Step 4: Success State with WhatsApp Button */}
       {step === 4 && confirmedApp && (
-        <div className="p-10 rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-8 h-8" />
+        <div className="p-6 sm:p-10 rounded-2xl sm:rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-5 sm:space-y-6">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               {editingAppointment ? 'Agendamento Atualizado com Sucesso!' : 'Agendamento Confirmado com Sucesso!'}
             </h2>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
@@ -338,12 +338,12 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
           </div>
 
           {/* WhatsApp Button with Pre-filled Message */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
             <a
               href={getWhatsAppLink(confirmedApp)}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2.5"
+              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2.5 min-h-[44px]"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
               <span>Enviar Confirmação via WhatsApp</span>
@@ -351,7 +351,7 @@ export const BookingScreen: React.FC<BookingScreenProps> = ({
 
             <button
               onClick={onComplete}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/25"
+              className="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center min-h-[44px]"
             >
               Ir para Área do Cliente
             </button>

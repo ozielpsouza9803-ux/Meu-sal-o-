@@ -9,12 +9,12 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ currentScreen, onSelectScreen, onToggleChat }) => {
-  const tabs = [
-    { id: 'home' as ScreenId, label: 'Início', icon: Home },
-    { id: 'booking' as ScreenId, label: 'Agendar', icon: Calendar },
-    { id: 'gallery' as ScreenId, label: 'Galeria', icon: ImageIcon },
-    { id: 'client' as ScreenId, label: 'Cliente', icon: User },
-    { id: 'chat-toggle' as ScreenId, label: 'Chat', icon: MessageSquare },
+  const tabs: Array<{ id: ScreenId | 'chat-toggle'; label: string; icon: React.ComponentType<{ className?: string }> }> = [
+    { id: 'home', label: 'Início', icon: Home },
+    { id: 'booking', label: 'Agendar', icon: Calendar },
+    { id: 'gallery', label: 'Galeria', icon: ImageIcon },
+    { id: 'client', label: 'Cliente', icon: User },
+    { id: 'chat-toggle', label: 'Chat', icon: MessageSquare },
   ];
 
   return (
@@ -22,18 +22,18 @@ export const MobileNav: React.FC<MobileNavProps> = ({ currentScreen, onSelectScr
       <div className="grid grid-cols-5 items-center h-16 px-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = currentScreen === tab.id;
+          const isActive = tab.id === 'chat-toggle' ? currentScreen === 'chat' : currentScreen === tab.id;
           return (
             <button
               key={tab.id}
-              onClick={() => tab.id === 'chat-toggle' ? onToggleChat() : onSelectScreen(tab.id)}
+              onClick={() => tab.id === 'chat-toggle' ? onToggleChat() : onSelectScreen(tab.id as ScreenId)}
               className={`
-                flex flex-col items-center justify-center py-1 transition-colors
+                flex flex-col items-center justify-center py-1 transition-colors min-h-[44px]
                 ${isActive ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'}
               `}
             >
               <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.75]'}`} />
-              <span className="text-[9px] font-medium tracking-tight mt-1 truncate">{tab.label}</span>
+              <span className="text-[10px] font-medium tracking-tight mt-1 truncate">{tab.label}</span>
             </button>
           );
         })}

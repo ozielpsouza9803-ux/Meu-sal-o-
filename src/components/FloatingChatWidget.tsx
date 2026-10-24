@@ -125,11 +125,12 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({
     <div ref={chatRef}>
       {/* Floating Circular Button (Hidden when chat window is open) */}
       {!isOpen && (
-        <div className="fixed bottom-20 right-6 z-40 flex flex-col items-end">
+        <div className="fixed bottom-20 lg:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end">
           <button
             onClick={onToggleChat}
-            className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 shadow-2xl shadow-amber-500/40 flex items-center justify-center text-slate-950 hover:scale-105 active:scale-95 transition-all border-2 border-slate-950"
+            className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 shadow-2xl shadow-amber-500/40 flex items-center justify-center text-slate-950 hover:scale-105 active:scale-95 transition-all border-2 border-slate-950"
             title="Abrir Chat"
+            aria-label="Abrir Chat"
           >
             <img 
               src={chatAvatar} 
@@ -137,14 +138,14 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({
               className="w-full h-full rounded-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-slate-950 rounded-full" />
+            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-slate-950 rounded-full" />
           </button>
         </div>
       )}
 
       {/* Chat Panel Window */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 sm:right-6 z-40 w-[92vw] sm:w-[400px] h-[520px] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
+        <div className="fixed bottom-20 lg:bottom-6 right-2 sm:right-6 z-40 w-[calc(100vw-1rem)] sm:w-[400px] h-[520px] max-h-[calc(100dvh-6.5rem)] lg:max-h-[calc(100dvh-3rem)] bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
           {/* Header */}
           <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">

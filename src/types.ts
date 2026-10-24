@@ -24,6 +24,15 @@ export interface Stylist {
   status: 'disponível' | 'em atendimento' | 'pausa';
 }
 
+export interface AuthUser {
+  id: string;
+  name: string;
+  email?: string;
+  role: UserRole;
+  stylistId?: string;
+  phone?: string;
+}
+
 export interface Appointment {
   id: string;
   serviceId: string;
@@ -31,6 +40,8 @@ export interface Appointment {
   stylistId: string;
   stylistName: string;
   clientName: string;
+  clientId?: string;
+  clientEmail?: string;
   date: string;
   time: string;
   price: number;

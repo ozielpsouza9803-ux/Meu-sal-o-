@@ -20,7 +20,7 @@ interface MediaCarouselProps {
 export const MediaCarousel: React.FC<MediaCarouselProps> = ({
   items,
   autoPlayInterval = 4000,
-  heightClass = 'h-72 sm:h-96',
+  heightClass = 'h-56 sm:h-72 md:h-80 lg:h-[380px] max-h-[55vh]',
   onCustomize,
   showCustomizeButton = false,
   customizeButtonLabel = 'Gerenciar Mídias',

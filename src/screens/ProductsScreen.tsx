@@ -60,7 +60,7 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
             { id: 'p-1', url: products[0]?.image || '/src/assets/images/product_shampoo_1792861533691.jpg', type: 'image', title: "Linha Exclusiva L'Élite Home Care" },
             { id: 'p-2', url: '/src/assets/images/product_shampoo_1792861533691.jpg', type: 'image', title: "Óleos Essenciais & Tratamentos Nutritivos" }
           ]}
-          heightClass="h-64 sm:h-80"
+          heightClass="h-56 sm:h-72 md:h-80 lg:h-[380px] max-h-[55vh]"
           onCustomize={onCustomizeProductCarousel}
           showCustomizeButton={true}
           customizeButtonLabel="Gerenciar Carrossel de Produtos"
@@ -68,18 +68,18 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
       </section>
 
       {/* Vitrine Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6 lg:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 sm:p-6 lg:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800">
         <div>
-          <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+          <span className="text-[11px] sm:text-xs font-semibold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
             E-commerce L'Élite
           </span>
-          <h1 className="text-2xl font-extrabold text-white mt-2">Vitrine de Produtos Profissionais</h1>
-          <p className="text-xs text-slate-400">Leve o tratamento de salão para o seu home care diário com fórmulas exclusivas.</p>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-2">Vitrine de Produtos Profissionais</h1>
+          <p className="text-xs text-slate-400 mt-1">Leve o tratamento de salão para o seu home care diário com fórmulas exclusivas.</p>
         </div>
 
         <button
           onClick={() => setIsCartOpen(true)}
-          className="relative px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2"
+          className="w-full sm:w-auto justify-center min-h-[44px] relative px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2"
         >
           <ShoppingBag className="w-4 h-4" />
           <span>Carrinho ({totalItemsCount})</span>
@@ -92,10 +92,10 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
       </div>
 
       {/* Products Grid with Customizer */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {products.map((product) => (
           <div key={product.id} className="group bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-amber-500/50 transition-all">
-            <div className="h-52 relative overflow-hidden bg-slate-950">
+            <div className="h-48 sm:h-52 relative overflow-hidden bg-slate-950">
               <img 
                 src={product.image} 
                 alt={product.name}
@@ -109,14 +109,14 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
               {/* Customize Product Image Button */}
               <button
                 onClick={() => onCustomizeProduct(product.id, product.name, product.image)}
-                className="absolute top-3 right-3 w-8 h-8 bg-slate-900/90 text-amber-400 rounded-xl flex items-center justify-center border border-amber-500/30 opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                className="absolute top-3 right-3 w-8 h-8 bg-slate-900/90 text-amber-400 rounded-xl flex items-center justify-center border border-amber-500/30 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow"
                 title="Personalizar Imagem do Produto"
               >
                 <Camera className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
+            <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col justify-between">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
                   <Star className="w-3.5 h-3.5 fill-amber-400" />
@@ -144,7 +144,7 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({
       {/* Cart Drawer Modal */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 h-full flex flex-col justify-between p-6 shadow-2xl">
+          <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 h-full flex flex-col justify-between p-4 sm:p-6 pb-safe shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div className="flex items-center gap-2">
