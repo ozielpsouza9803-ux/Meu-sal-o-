@@ -224,8 +224,8 @@ async function startServer() {
 
   // 1. Login endpoint with full password verification and cryptographic token issuance
   app.post('/api/auth/login', (req: Request, res: Response) => {
-    const { email, username, password, role } = req.body;
-    const identifier = (email || username || '').trim().toLowerCase();
+    const { email, username, login, password, role } = req.body;
+    const identifier = (email || username || login || '').trim().toLowerCase();
 
     if (!identifier) {
       return res.status(400).json({ error: 'Informe seu usuário ou e-mail de acesso.' });
@@ -436,13 +436,38 @@ async function startServer() {
     }
   });
 
+  // Availability endpoint (returns booked times for a given stylist and date, no private data)
+  app.get('/api/appointments/availability', (req: Request, res: Response) => {
+    const { stylistId, date } = req.query;
+    if (!stylistId || !date) {
+      return res.status(400).json({ error: 'Parâmetros stylistId e date são obrigatórios.' });
+    }
+    const bookedTimes = appointments
+      .filter(a => a.stylistId === String(stylistId) && a.date === String(date) && a.status === 'confirmado')
+      .map(a => a.time);
+    res.json({ stylistId, date, bookedTimes });
+  });
+
   app.post('/api/appointments', authenticate, (req: AuthRequest, res: Response) => {
     const user = req.user!;
     const body = req.body;
 
+    // Server-side conflict validation: check if stylist already has a confirmed appointment at this slot
+    const hasConflict = appointments.some(a => 
+      a.status === 'confirmado' &&
+      a.stylistId === body.stylistId &&
+      a.date === body.date &&
+      a.time === body.time
+    );
+
+    if (hasConflict) {
+      return res.status(409).json({ error: 'Horário indisponível: o profissional já possui agendamento confirmado neste horário.' });
+    }
+
     const newApp = {
       id: 'app-' + Date.now(),
       ...body,
+      status: body.status || 'confirmado',
       // Tie client identity to the authenticated user if client
       clientId: user.role === 'client' ? user.id : (body.clientId || user.id),
       clientEmail: user.role === 'client' ? user.email : (body.clientEmail || user.email),
@@ -451,6 +476,98 @@ async function startServer() {
 
     appointments.unshift(newApp);
     res.status(201).json(newApp);
+  });
+
+  // Edit / Reschedule / Update Status of an appointment
+  app.put('/api/appointments/:id', authenticate, (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    const user = req.user!;
+    const index = appointments.findIndex(a => a.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    }
+
+    const currentApp = appointments[index];
+
+    // Authorization check:
+    // Admin: can update anything
+    // Professional: can update status or notes for their own appointments
+    // Client: can update their own appointments
+    const isOwnerClient = user.role === 'client' && (
+      currentApp.clientId === user.id ||
+      (currentApp.clientEmail && currentApp.clientEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (currentApp.clientName && currentApp.clientName.toLowerCase() === user.name.toLowerCase())
+    );
+    const isAssignedPro = user.role === 'professional' && (
+      currentApp.stylistId === user.stylistId ||
+      currentApp.stylistName.toLowerCase().includes(user.name.toLowerCase())
+    );
+    const isAdmin = user.role === 'admin';
+
+    if (!isAdmin && !isAssignedPro && !isOwnerClient) {
+      return res.status(403).json({ error: 'Acesso negado: você não tem permissão para alterar este agendamento.' });
+    }
+
+    const updates = req.body;
+
+    // Check conflict if changing date, time or stylist to confirmed
+    const targetStylistId = updates.stylistId || currentApp.stylistId;
+    const targetDate = updates.date || currentApp.date;
+    const targetTime = updates.time || currentApp.time;
+    const targetStatus = updates.status || currentApp.status;
+
+    if (targetStatus === 'confirmado') {
+      const conflict = appointments.some(a => 
+        a.id !== id &&
+        a.status === 'confirmado' &&
+        a.stylistId === targetStylistId &&
+        a.date === targetDate &&
+        a.time === targetTime
+      );
+      if (conflict) {
+        return res.status(409).json({ error: 'Conflito de horário: o horário solicitado já está ocupado.' });
+      }
+    }
+
+    // Apply allowed updates
+    appointments[index] = {
+      ...currentApp,
+      ...updates,
+      id: currentApp.id, // Immutable ID
+    };
+
+    res.json(appointments[index]);
+  });
+
+  // Cancel appointment endpoint
+  app.delete('/api/appointments/:id', authenticate, (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    const user = req.user!;
+    const index = appointments.findIndex(a => a.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Agendamento não encontrado.' });
+    }
+
+    const currentApp = appointments[index];
+    const isOwnerClient = user.role === 'client' && (
+      currentApp.clientId === user.id ||
+      (currentApp.clientEmail && currentApp.clientEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (currentApp.clientName && currentApp.clientName.toLowerCase() === user.name.toLowerCase())
+    );
+    const isAssignedPro = user.role === 'professional' && (
+      currentApp.stylistId === user.stylistId ||
+      currentApp.stylistName.toLowerCase().includes(user.name.toLowerCase())
+    );
+    const isAdmin = user.role === 'admin';
+
+    if (!isAdmin && !isAssignedPro && !isOwnerClient) {
+      return res.status(403).json({ error: 'Acesso negado: permissão insuficiente para cancelar este agendamento.' });
+    }
+
+    appointments[index].status = 'cancelado';
+    res.json({ success: true, appointment: appointments[index] });
   });
 
   app.get('/api/admin/metrics', authenticate, requireRole(['admin']), (req: AuthRequest, res: Response) => {

@@ -64,6 +64,12 @@ export const Header: React.FC<HeaderProps> = ({
           Agendar
         </button>
         <button 
+          onClick={() => onSelectScreen('gallery')}
+          className={`hover:text-amber-400 transition-colors whitespace-nowrap shrink-0 py-1.5 ${currentScreen === 'gallery' ? 'text-amber-400 font-semibold' : ''}`}
+        >
+          Galeria de Serviços
+        </button>
+        <button 
           onClick={() => onSelectScreen('products')}
           className={`hover:text-amber-400 transition-colors whitespace-nowrap shrink-0 py-1.5 ${currentScreen === 'products' ? 'text-amber-400 font-semibold' : ''}`}
         >

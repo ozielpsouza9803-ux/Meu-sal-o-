@@ -4,13 +4,14 @@ import {
   Camera, Image as ImageIcon, QrCode, CreditCard, Percent, Save, CheckCircle2, 
   Clock, Star, Calendar, Sparkles, ChevronRight, AlertCircle, ShoppingBag
 } from 'lucide-react';
-import { Service, Stylist, Product, Banner, PaymentSettings } from '../types';
+import { Service, Stylist, Product, Banner, PaymentSettings, Appointment } from '../types';
 
 interface AdminScreenProps {
   services: Service[];
   products: Product[];
   banners: Banner[];
   stylists: Stylist[];
+  appointments?: Appointment[];
   onAddService: (service: Service) => void;
   onDeleteService: (id: string) => void;
   onAddProduct: (product: Product) => void;
@@ -18,6 +19,9 @@ interface AdminScreenProps {
   onAddBanner: (banner: Banner) => void;
   onDeleteBanner: (id: string) => void;
   onCustomizeStylist: (id: string, name: string, avatar: string) => void;
+  onEditAppointment?: (appointment: Appointment) => void;
+  onCancelAppointment?: (id: string) => void;
+  onUpdateAppointmentStatus?: (id: string, status: 'confirmado' | 'concluído' | 'cancelado') => void;
   currentRole: string;
   authToken?: string;
   paymentSettings: PaymentSettings | null;
@@ -29,6 +33,7 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({
   products,
   banners,
   stylists,
+  appointments = [],
   onAddService,
   onDeleteService,
   onAddProduct,
@@ -36,12 +41,21 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({
   onAddBanner,
   onDeleteBanner,
   onCustomizeStylist,
+  onEditAppointment,
+  onCancelAppointment,
+  onUpdateAppointmentStatus,
   currentRole,
   authToken,
   paymentSettings,
   onUpdatePaymentSettings,
 }) => {
-  const [activeTab, setActiveTab] = useState<'financial' | 'services' | 'products' | 'staff' | 'banners' | 'payments' | 'analytics'>('financial');
+  const [activeTab, setActiveTab] = useState<'financial' | 'appointments' | 'services' | 'products' | 'staff' | 'banners' | 'payments' | 'analytics'>('financial');
+
+  // Appointments Filtering & Search State
+  const [appStatusFilter, setAppStatusFilter] = useState<string>('todos');
+  const [appStylistFilter, setAppStylistFilter] = useState<string>('todos');
+  const [appSearchTerm, setAppSearchTerm] = useState<string>('');
+  const [cancellingAdminApp, setCancellingAdminApp] = useState<Appointment | null>(null);
 
   // New Service Form State
   const [showAddServiceForm, setShowAddServiceForm] = useState(false);
@@ -271,6 +285,12 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({
           Visão Financeira
         </button>
         <button 
+          onClick={() => setActiveTab('appointments')} 
+          className={`px-4 py-2.5 min-h-[40px] text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${activeTab === 'appointments' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white bg-slate-900'}`}
+        >
+          Agendamentos ({appointments.length})
+        </button>
+        <button 
           onClick={() => setActiveTab('services')} 
           className={`px-4 py-2.5 min-h-[40px] text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${activeTab === 'services' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white bg-slate-900'}`}
         >
@@ -381,6 +401,197 @@ export const AdminScreen: React.FC<AdminScreenProps> = ({
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Tab: Appointments Management */}
+      {activeTab === 'appointments' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-white">Central de Agendamentos & Agenda Geral</h2>
+              <p className="text-xs text-slate-400">Controle completo de horários, reagendamento e prevenção de conflitos.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-amber-400 font-semibold bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
+                {appointments.filter(a => a.status === 'confirmado').length} Confirmados Ativos
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Filter & Search Bar */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Buscar por Cliente ou Serviço</label>
+                <input
+                  type="text"
+                  placeholder="Nome do cliente ou serviço..."
+                  value={appSearchTerm}
+                  onChange={(e) => setAppSearchTerm(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Filtrar por Status</label>
+                <select
+                  value={appStatusFilter}
+                  onChange={(e) => setAppStatusFilter(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                >
+                  <option value="todos">Todos os Status</option>
+                  <option value="confirmado">Confirmados</option>
+                  <option value="concluído">Concluídos</option>
+                  <option value="cancelado">Cancelados</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Filtrar por Profissional</label>
+                <select
+                  value={appStylistFilter}
+                  onChange={(e) => setAppStylistFilter(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                >
+                  <option value="todos">Todos os Profissionais</option>
+                  {stylists.map(s => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Appointments List */}
+          <div className="space-y-3">
+            {appointments.length === 0 ? (
+              <div className="p-8 text-center rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 text-xs">
+                Nenhum agendamento registrado no sistema.
+              </div>
+            ) : (
+              appointments
+                .filter(app => {
+                  const matchStatus = appStatusFilter === 'todos' || app.status === appStatusFilter;
+                  const matchStylist = appStylistFilter === 'todos' || app.stylistId === appStylistFilter;
+                  const matchSearch = app.clientName.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+                                      app.serviceName.toLowerCase().includes(appSearchTerm.toLowerCase()) ||
+                                      app.stylistName.toLowerCase().includes(appSearchTerm.toLowerCase());
+                  return matchStatus && matchStylist && matchSearch;
+                })
+                .map((app) => (
+                  <div 
+                    key={app.id} 
+                    className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 transition-all hover:border-slate-700"
+                  >
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                          app.status === 'confirmado' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' :
+                          app.status === 'concluído' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
+                          'text-red-400 bg-red-500/10 border-red-500/20'
+                        }`}>
+                          {app.status.toUpperCase()}
+                        </span>
+                        <span className="text-xs text-white font-semibold flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-amber-400" /> {app.date} às {app.time}
+                        </span>
+                        <span className="text-xs text-slate-400">· ID: #{app.id}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-0.5">
+                        <h3 className="font-bold text-white text-sm sm:text-base">{app.clientName}</h3>
+                        <span className="text-slate-400 text-xs">— {app.serviceName}</span>
+                      </div>
+
+                      <p className="text-xs text-slate-400">
+                        Profissional: <span className="text-slate-200 font-medium">{app.stylistName}</span> · Valor: <span className="text-amber-400 font-bold">R$ {app.price.toFixed(2)}</span>
+                      </p>
+
+                      {app.notes && (
+                        <p className="text-xs italic text-slate-400 bg-slate-950/60 p-2 rounded-lg border border-slate-800/60 mt-1">
+                          Nota: "{app.notes}"
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Actions for Admin */}
+                    <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start sm:justify-end border-t lg:border-t-0 border-slate-800 pt-3 lg:pt-0">
+                      {onEditAppointment && (
+                        <button
+                          onClick={() => onEditAppointment(app)}
+                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 min-h-[38px]"
+                          title="Reagendar ou Editar"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                          <span>Reagendar</span>
+                        </button>
+                      )}
+
+                      {app.status === 'confirmado' && onUpdateAppointmentStatus && (
+                        <button
+                          onClick={() => onUpdateAppointmentStatus(app.id, 'concluído')}
+                          className="px-3 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-600/30 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 min-h-[38px]"
+                          title="Marcar como Concluído"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Concluir</span>
+                        </button>
+                      )}
+
+                      {app.status !== 'cancelado' && (
+                        <button
+                          onClick={() => setCancellingAdminApp(app)}
+                          className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 min-h-[38px]"
+                          title="Cancelar Agendamento"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Cancelar</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+            )}
+          </div>
+
+          {/* Cancellation Confirmation Dialog */}
+          {cancellingAdminApp && (
+            <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+                <h3 className="text-base font-bold text-white">Confirmar Cancelamento pelo ADM</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Deseja realmente cancelar o agendamento de <span className="text-white font-medium">{cancellingAdminApp.clientName}</span> para {cancellingAdminApp.serviceName} em <span className="text-white font-medium">{cancellingAdminApp.date} às {cancellingAdminApp.time}</span>?
+                </p>
+                <p className="text-xs text-amber-400/90 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+                  O horário será liberado para novos clientes na agenda do profissional.
+                </p>
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setCancellingAdminApp(null)}
+                    className="px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 rounded-xl"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onCancelAppointment) {
+                        onCancelAppointment(cancellingAdminApp.id);
+                      } else if (onUpdateAppointmentStatus) {
+                        onUpdateAppointmentStatus(cancellingAdminApp.id, 'cancelado');
+                      }
+                      setCancellingAdminApp(null);
+                    }}
+                    className="px-5 py-2 text-xs font-bold rounded-xl bg-red-600 hover:bg-red-500 text-white"
+                  >
+                    Confirmar Cancelamento
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

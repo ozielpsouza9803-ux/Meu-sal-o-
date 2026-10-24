@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Home, Scissors, Users, ShoppingBag, Clock, Calendar, 
   LogIn, MessageSquare, ChevronLeft, Download, ShieldCheck, 
-  CheckCircle2, X 
+  CheckCircle2, X, Image as ImageIcon
 } from 'lucide-react';
 import { ScreenId, UserRole } from '../types';
 
@@ -99,6 +99,14 @@ export const PublicMenu: React.FC<PublicMenuProps> = ({
           >
             <Users className="w-4 h-4 text-amber-400 shrink-0" />
             <span>Profissionais da Equipe</span>
+          </button>
+
+          <button
+            onClick={() => { onSelectScreen('gallery'); onToggle(); }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 active:bg-slate-800 transition-colors"
+          >
+            <ImageIcon className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Galeria de Serviços</span>
           </button>
 
           <button

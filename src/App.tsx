@@ -44,7 +44,16 @@ export default function App() {
     mode: 'client',
   });
 
-  const handleToggleChat = () => setIsChatOpen(!isChatOpen);
+  const handleToggleChat = () => {
+    const allowedFloatingScreens: ScreenId[] = ['home', 'client', 'professional', 'gallery'];
+    if (allowedFloatingScreens.includes(currentScreen)) {
+      setIsChatOpen(prev => !prev);
+    } else if (currentScreen === 'admin') {
+      setIsChatOpen(false);
+    } else {
+      setCurrentScreen(prev => (prev === 'chat' ? 'home' : 'chat'));
+    }
+  };
 
   const [services, setServices] = useState<Service[]>([]);
   const [stylists, setStylists] = useState<Stylist[]>(INITIAL_STYLISTS);
@@ -213,8 +222,16 @@ export default function App() {
     }, 600);
   };
 
-  const handleCancelAppointment = (id: string) => {
+  const handleCancelAppointment = async (id: string) => {
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelado' } : a));
+    if (authToken) {
+      try {
+        await fetch(`/api/appointments/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` },
+        });
+      } catch {}
+    }
   };
 
   const handleEditAppointment = (appointment: Appointment) => {
@@ -238,9 +255,37 @@ export default function App() {
     }
   };
 
-  const handleUpdateAppointment = (app: Appointment) => {
+  const handleUpdateAppointment = async (app: Appointment) => {
     setAppointments(prev => prev.map(a => a.id === app.id ? app : a));
     setEditingAppointment(null);
+    if (authToken) {
+      try {
+        await fetch(`/api/appointments/${app.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(app),
+        });
+      } catch {}
+    }
+  };
+
+  const handleUpdateAppointmentStatus = async (id: string, status: 'confirmado' | 'concluído' | 'cancelado', notes?: string) => {
+    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status, ...(notes !== undefined ? { notes } : {}) } : a));
+    if (authToken) {
+      try {
+        await fetch(`/api/appointments/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ status, ...(notes !== undefined ? { notes } : {}) }),
+        });
+      } catch {}
+    }
   };
 
   const handleUpdateStylistStatus = (id: string, status: 'disponível' | 'em atendimento' | 'pausa') => {
@@ -295,6 +340,7 @@ export default function App() {
             currentUser={currentUser}
             onUpdateStatus={handleUpdateStylistStatus} 
             onCustomizeAvatar={(id, name, avatar) => handleOpenMediaCustomizer(`Foto de ${name}`, avatar, 'image', 'stylist', id)} 
+            onUpdateAppointmentStatus={handleUpdateAppointmentStatus}
           />
         );
       case 'admin': 
@@ -304,6 +350,7 @@ export default function App() {
             products={products} 
             banners={banners} 
             stylists={stylists} 
+            appointments={appointments}
             onAddService={handleAddService} 
             onDeleteService={handleDeleteService} 
             onAddProduct={handleAddProduct} 
@@ -311,6 +358,9 @@ export default function App() {
             onAddBanner={handleAddBanner} 
             onDeleteBanner={handleDeleteBanner} 
             onCustomizeStylist={(id, name, avatar) => handleOpenMediaCustomizer(`Perfil de ${name}`, avatar, 'image', 'stylist', id)} 
+            onEditAppointment={handleEditAppointment}
+            onCancelAppointment={handleCancelAppointment}
+            onUpdateAppointmentStatus={handleUpdateAppointmentStatus}
             currentRole={currentRole} 
             authToken={authToken || undefined}
             paymentSettings={paymentSettings} 
@@ -358,7 +408,15 @@ export default function App() {
           />
         );
       case 'gallery': 
-        return <GalleryScreen onNavigateBooking={() => setCurrentScreen('booking')} />;
+        return (
+          <GalleryScreen 
+            onNavigateBooking={(serviceId) => {
+              if (serviceId) setSelectedServiceIdForBooking(serviceId);
+              setEditingAppointment(null);
+              setCurrentScreen('booking');
+            }} 
+          />
+        );
       case 'products': 
         return (
           <ProductsScreen 
@@ -459,6 +517,13 @@ export default function App() {
                   appointments={appointments} 
                 />
               </div>
+              <MobileNav 
+                currentScreen={currentScreen} 
+                onSelectScreen={handleNavigateScreen} 
+                onToggleChat={handleToggleChat} 
+                isChatOpen={isChatOpen}
+                isInFrame={true}
+              />
             </div>
           ) : (
             <div className="w-full max-w-7xl mx-auto min-w-0">
@@ -478,11 +543,15 @@ export default function App() {
           )}
         </main>
 
-        <MobileNav 
-          currentScreen={currentScreen} 
-          onSelectScreen={handleNavigateScreen} 
-          onToggleChat={handleToggleChat} 
-        />
+        {!isMobileFrame && (
+          <MobileNav 
+            currentScreen={currentScreen} 
+            onSelectScreen={handleNavigateScreen} 
+            onToggleChat={handleToggleChat} 
+            isChatOpen={isChatOpen}
+            isInFrame={false}
+          />
+        )}
       </div>
 
       <MediaCustomizerModal 

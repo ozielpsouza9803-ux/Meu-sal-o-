@@ -35,7 +35,7 @@ export const FloatingChatWidget: React.FC<FloatingChatWidgetProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const allowedScreens: ScreenId[] = ['home', 'client', 'professional'];
+  const allowedScreens: ScreenId[] = ['home', 'client', 'professional', 'gallery'];
   const isScreenAllowed = allowedScreens.includes(currentScreen);
 
   // Close chat when clicking outside
