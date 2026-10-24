@@ -54,9 +54,26 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface Banner {
+  id: string;
+  url: string;
+  type: 'image' | 'video';
+  active: boolean;
+}
+
 export interface ChatMessage {
   id: string;
   sender: 'user' | 'assistant' | 'stylist';
   text: string;
   timestamp: string;
+}
+
+export interface PaymentSettings {
+  pixEnabled: boolean;
+  pixKey: string;
+  pixRecipient: string;
+  cardManualEnabled: boolean;
+  depositRequired: boolean;
+  depositType: 'fixed' | 'percentage';
+  depositValue: number;
 }

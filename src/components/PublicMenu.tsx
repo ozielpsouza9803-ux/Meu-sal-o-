@@ -95,7 +95,7 @@ export const PublicMenu: React.FC<PublicMenuProps> = ({
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
             >
               <ShoppingBag className="w-5 h-5 text-amber-400" />
-              <span>Vitrine de produtos</span>
+              <span>Vitrine de Produtos</span>
             </button>
 
             <button
@@ -103,7 +103,7 @@ export const PublicMenu: React.FC<PublicMenuProps> = ({
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
             >
               <Clock className="w-5 h-5 text-amber-400" />
-              <span>Horários de atendimento</span>
+              <span>Horários de Atendimento</span>
             </button>
 
             <button
@@ -119,16 +119,16 @@ export const PublicMenu: React.FC<PublicMenuProps> = ({
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
             >
               <MessageSquare className="w-5 h-5 text-amber-400" />
-              <span>Chat público</span>
+              <span>Chat</span>
             </button>
 
-            {/* PWA Install Option in External Menu */}
+            {/* PWA Install Option */}
             <button
               onClick={handleInstallPWA}
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-emerald-400 hover:bg-emerald-500/10 transition-colors border border-emerald-500/20 mt-4"
             >
               <Download className="w-5 h-5" />
-              <span>Instalar Aplicativo (PWA)</span>
+              <span>Instalar Aplicativo</span>
             </button>
           </nav>
         </div>
@@ -136,10 +136,16 @@ export const PublicMenu: React.FC<PublicMenuProps> = ({
         <div className="pt-6 border-t border-slate-800">
           <button
             onClick={() => { onLoginClick('client'); onToggle(); }}
-            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 mb-3"
           >
             <LogIn className="w-4 h-4" />
-            <span>Entrar ou cadastrar</span>
+            <span>Entrar ou Cadastrar</span>
+          </button>
+          <button
+            onClick={() => { onLoginClick('admin'); onToggle(); }}
+            className="w-full py-2 bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white font-bold text-[10px] rounded-xl transition-all flex items-center justify-center gap-2"
+          >
+            <span>Acesso Administrador</span>
           </button>
         </div>
       </aside>

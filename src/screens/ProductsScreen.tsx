@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Star, Plus, Minus, Trash2, CheckCircle2, X, Camera } from 'lucide-react';
+import { ShoppingBag, Star, Plus, Minus, CheckCircle2, X, Camera } from 'lucide-react';
 import { Product, CartItem } from '../types';
+import { MediaCarousel, MediaItem } from '../components/MediaCarousel';
 
 interface ProductsScreenProps {
   products: Product[];
   onCustomizeProduct: (id: string, name: string, image: string) => void;
+  productCarouselItems: MediaItem[];
+  onCustomizeProductCarousel: () => void;
 }
 
-export const ProductsScreen: React.FC<ProductsScreenProps> = ({ products, onCustomizeProduct }) => {
+export const ProductsScreen: React.FC<ProductsScreenProps> = ({
+  products,
+  onCustomizeProduct,
+  productCarouselItems,
+  onCustomizeProductCarousel,
+}) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
@@ -44,7 +52,21 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = ({ products, onCust
   };
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-24">
+      {/* Products Area Carousel (Carrossel da Área Produtos) */}
+      <section className="relative">
+        <MediaCarousel 
+          items={productCarouselItems.length > 0 ? productCarouselItems : [
+            { id: 'p-1', url: products[0]?.image || '/src/assets/images/product_shampoo_1792861533691.jpg', type: 'image', title: "Linha Exclusiva L'Élite Home Care" },
+            { id: 'p-2', url: '/src/assets/images/product_shampoo_1792861533691.jpg', type: 'image', title: "Óleos Essenciais & Tratamentos Nutritivos" }
+          ]}
+          heightClass="h-64 sm:h-80"
+          onCustomize={onCustomizeProductCarousel}
+          showCustomizeButton={true}
+          customizeButtonLabel="Gerenciar Carrossel de Produtos"
+        />
+      </section>
+
       {/* Vitrine Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6 lg:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800">
         <div>

@@ -5,15 +5,16 @@ import { ScreenId } from '../types';
 interface MobileNavProps {
   currentScreen: ScreenId;
   onSelectScreen: (screen: ScreenId) => void;
+  onToggleChat: () => void;
 }
 
-export const MobileNav: React.FC<MobileNavProps> = ({ currentScreen, onSelectScreen }) => {
+export const MobileNav: React.FC<MobileNavProps> = ({ currentScreen, onSelectScreen, onToggleChat }) => {
   const tabs = [
     { id: 'home' as ScreenId, label: 'Início', icon: Home },
     { id: 'booking' as ScreenId, label: 'Agendar', icon: Calendar },
     { id: 'gallery' as ScreenId, label: 'Galeria', icon: ImageIcon },
     { id: 'client' as ScreenId, label: 'Cliente', icon: User },
-    { id: 'chat' as ScreenId, label: 'Chat', icon: MessageSquare },
+    { id: 'chat-toggle' as ScreenId, label: 'Chat', icon: MessageSquare },
   ];
 
   return (
@@ -25,7 +26,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ currentScreen, onSelectScr
           return (
             <button
               key={tab.id}
-              onClick={() => onSelectScreen(tab.id)}
+              onClick={() => tab.id === 'chat-toggle' ? onToggleChat() : onSelectScreen(tab.id)}
               className={`
                 flex flex-col items-center justify-center py-1 transition-colors
                 ${isActive ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'}

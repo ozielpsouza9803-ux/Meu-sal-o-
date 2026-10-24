@@ -66,7 +66,7 @@ export const ClientScreen: React.FC<ClientScreenProps> = ({
           onClick={() => setActiveTab('upcoming')}
           className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${activeTab === 'upcoming' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white bg-slate-900'}`}
         >
-          Agendamentos Ativos ({upcomingAppointments.length})
+          Minha Agenda ({upcomingAppointments.length})
         </button>
         <button
           onClick={() => setActiveTab('history')}

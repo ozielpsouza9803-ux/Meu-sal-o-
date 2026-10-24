@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Calendar, Heart, MessageSquare, LogOut, Scissors, ChevronLeft } from 'lucide-react';
+import { User, Calendar, Clock, Heart, MessageSquare, LogOut, Scissors, ChevronLeft, ImageIcon, History } from 'lucide-react';
 import { ScreenId, UserRole } from '../types';
 
 interface ClientMenuProps {
@@ -68,7 +68,7 @@ export const ClientMenu: React.FC<ClientMenuProps> = ({
               className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${currentScreen === 'client' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-900'}`}
             >
               <User className="w-5 h-5 text-amber-400" />
-              <span>Meu perfil</span>
+              <span>Meu Perfil</span>
             </button>
 
             <button
@@ -76,7 +76,15 @@ export const ClientMenu: React.FC<ClientMenuProps> = ({
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
             >
               <Calendar className="w-5 h-5 text-amber-400" />
-              <span>Meus agendamentos</span>
+              <span>Minha Agenda</span>
+            </button>
+
+            <button
+              onClick={() => { onSelectScreen('client'); onToggle(); }}
+              className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
+            >
+              <History className="w-5 h-5 text-amber-400" />
+              <span>Histórico de Visitas</span>
             </button>
 
             <button
@@ -84,7 +92,15 @@ export const ClientMenu: React.FC<ClientMenuProps> = ({
               className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-900 transition-colors"
             >
               <Heart className="w-5 h-5 text-amber-400" />
-              <span>Meus favoritos</span>
+              <span>Profissionais Favoritos</span>
+            </button>
+            
+            <button
+              onClick={() => { onSelectScreen('gallery'); onToggle(); }}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${currentScreen === 'gallery' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-900'}`}
+            >
+              <ImageIcon className="w-5 h-5 text-amber-400" />
+              <span>Galeria de Serviços</span>
             </button>
 
             <button

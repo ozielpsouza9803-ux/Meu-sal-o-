@@ -1,5 +1,5 @@
 import React from 'react';
-import { Smartphone, Monitor } from 'lucide-react';
+import { Monitor, ChevronLeft } from 'lucide-react';
 import { ScreenId, UserRole } from '../types';
 
 interface HeaderProps {
@@ -22,7 +22,14 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between gap-8">
       {/* Zone 1: Brand / Menu Toggle */}
-      <div className="flex items-center gap-3 shrink-0 pl-12 sm:pl-16">
+      <div className="flex items-center gap-3 shrink-0">
+        <button
+          onClick={onToggleSidebar}
+          className="w-10 h-10 rounded-xl bg-slate-800 text-slate-200 flex items-center justify-center hover:bg-slate-700 transition-colors"
+          title="Abrir Menu"
+        >
+          <ChevronLeft className="w-5 h-5 rotate-180" />
+        </button>
         <div>
           <span className="text-base font-bold text-white tracking-tight whitespace-nowrap block">
             L'Élite Salon & Spa
@@ -74,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
           `}
           title={isMobileFrame ? "Mudar para Tela Cheia" : "Simular Dispositivo 9:16"}
         >
-          {isMobileFrame ? <Monitor className="w-4 h-4" /> : <Smartphone className="w-4 h-4" />}
+          <Monitor className="w-4 h-4" />
           <span className="hidden xl:inline">{isMobileFrame ? "Tela Cheia" : "Modo 9:16 PWA"}</span>
         </button>
       </div>

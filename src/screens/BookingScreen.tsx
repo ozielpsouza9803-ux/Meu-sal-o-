@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, CheckCircle2, Scissors, ArrowRight, ArrowLeft, AlertCircle, MessageCircle } from 'lucide-react';
-import { Service, Stylist, Appointment } from '../types';
+import { Service, Stylist, Appointment, PaymentSettings } from '../types';
 
 interface BookingScreenProps {
   services: Service[];
@@ -11,6 +11,7 @@ interface BookingScreenProps {
   onConfirmBooking: (appointment: Appointment) => void;
   onUpdateAppointment?: (appointment: Appointment) => void;
   onComplete: () => void;
+  paymentSettings: PaymentSettings | null;
 }
 
 export const BookingScreen: React.FC<BookingScreenProps> = ({
